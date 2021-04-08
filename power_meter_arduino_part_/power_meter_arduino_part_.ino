@@ -1,5 +1,13 @@
-// #include "EmonLib.h"             // Include Emon Library
-// EnergyMonitor emon1;             // Create an instance
+/* Author: Sakib Chowdhury */
+
+/* ACS712 Model         Optimized Current Range              Output Sensitivity
+-------------------------------------------------------------------------------
+
+ACS712 ELC-05           +/- 5A                              185 mV/A
+
+ACS712 ELC-20           +/- 20A                             100 mV/A
+
+ACS712 ELC-30           +/- 30A                             66 mV/A */
 
 int mVperAmp = 185; // use 100 for 20A Mdule and 66 for 30A Module
 int RawValue = 0;
