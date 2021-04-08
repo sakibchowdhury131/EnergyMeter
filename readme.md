@@ -1,7 +1,7 @@
 # Energy Meter 
 - Overview
     -
-- AVR chip is used for all measurements
+- AVR chip has been used for all measurements
 - UART communication between AVR and ESP8266: 
     - The measurements are sent to ESP8266 via UART communication.
 - ESP8266 sends data to the MQTT server via internet and WiFi. 
