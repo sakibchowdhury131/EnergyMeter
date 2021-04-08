@@ -1,27 +1,16 @@
 // #include "EmonLib.h"             // Include Emon Library
 // EnergyMonitor emon1;             // Create an instance
 
-int mVperAmp = 100; // use 100 for 20A Mdule and 66 for 30A Module
+int mVperAmp = 185; // use 100 for 20A Mdule and 66 for 30A Module
 int RawValue = 0;
-int ACSoffset = 2500;
+int ACSoffset = 1630;
 
-float Vcorr = 0.95;
-float ccorr = 1.64;
+float Vcorr = 0.9;
+float ccorr = 1.0;
 
 
 #define samplerate 89
 
-#include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
-
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 String str;
 
 int voltages[samplerate], currents[samplerate];
@@ -32,21 +21,6 @@ double Voltage = 0, Amps = 0, Power=0, PF;
 void setup()
 {
   Serial.begin(115200);
-
-
-
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
-  }
-
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  delay(2000); // Pause for 2 seconds
-
-  // Clear the buffer
-  display.clearDisplay();
 
 
   //emon1.voltage(0, 234.26, 0);  // Voltage: input pin, calibration, phase_shift
@@ -97,6 +71,7 @@ void loop()
   {
     voltages[i] = analogRead(A2);
     currents[i] = analogRead(A1);
+    
   }
   
   Voltage = 0;
@@ -124,8 +99,9 @@ void loop()
   for (int i = 0; i < samplerate; i++)
   {
     //Serial.println(voltages[i]);
-    tempV = 5*(11.0*220.0/12)*(voltages[i])/1023.0*Vcorr;
+    tempV = 5*(11.0*220.0/6)*(voltages[i])/1023.0*Vcorr;
     tempI = (5000.0*(currents[i])) / (1023.0*mVperAmp)*ccorr ; // Gets you mV
+    Serial.print(tempV); Serial.print("    "); Serial.println(tempI);
     Power += tempV*tempI;
     
     Voltage = Voltage + pow(tempV,2);
@@ -197,27 +173,6 @@ void loop()
   display.display();
  
   */
-
-  
-  display.clearDisplay();
-
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(WHITE);        // Draw white text
-  display.setCursor(0, 0);            // Start at top-left corner
-  display.print(F("Power Real:"));
-  display.print(Power);
-  display.println(F("W"));
-  display.print(F("Voltage:"));
-  display.print(Voltage);
-  display.println(F("V"));
-  display.print(F("Current:"));
-  display.print(Amps);
-  display.println(F("A"));
-  display.print(F("Power Factor:"));
-  display.println(pf);
-
-  display.display();
-  delay (2000);
 
    str = "Real power : " + String (Power) + "Watt" + "  " + "Current :" + String (Amps) + "A" + "  " + "Supply Voltage:" + String (Voltage) + "Volts" + "  " + "Power Factor :" + String (pf) ;
    Serial.print (str);
